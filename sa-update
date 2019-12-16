@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# schaal @it
+#
+# Simple script to update SpamAssassin
+
+SYSLOG_TAG=sa-update
+
+compile=0
+
+logger -d -t $SYSLOG_TAG "Start SA-Update"
+
+sa-update --nogpg
+retval="$?"
+if [ $retval -eq 0 ]; then compile=1; fi
+
+
+sa-update --nogpg --channel updates.spamassassin.org
+retval="$?"
+if [ $retval -eq 0 ]; then compile=1; fi
+
+sa-update --nogpg --channel sa.zmi.at
+retval="$?"
+if [ $retval -eq 0 ]; then compile=1; fi
+
+sa-update --nogpg --channel sa.schaal-it.net
+retval="$?"
+if [ $retval -eq 0 ]; then compile=1; fi
+
+sa-update --nogpg --channel spamassassin.heinlein-support.de
+retval="$?"
+if [ $retval -eq 0 ]; then compile=1; fi
+
+if [ $compile -eq 1 ]; then
+    logger -d -t $SYSLOG_TAG "SA-Update found"
+    sa-compile --quiet 2>/dev/null
+    systemctl restart pmg-smtp-filter
+else
+    logger -d -t $SYSLOG_TAG "No SA-Update found"
+fi
