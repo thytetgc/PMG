@@ -1,0 +1,18 @@
+[Unit]
+Description=DCC (Distributed Checksum Clearinghouses) interface daemon
+After=remote-fs.target systemd-journald-dev-log.socket
+
+[Service]
+Type=forking
+PermissionsStartOnly=true
+RuntimeDirectory=dcc
+ExecStart=/var/dcc/libexec/dccifd
+User=root
+Group=root
+Nice=1
+
+#DCC writes pid file with "-" at the beginning which confuses systemd
+#PIDFile=/run/dcc/dccifd.pid
+
+[Install]
+WantedBy=multi-user.target
