@@ -1,0 +1,48 @@
+ifplugin Mail::SpamAssassin::Plugin::RelayCountry
+add_header all Relay-Country _RELAYCOUNTRY_
+header RELAYCOUNTRY_BAD X-Relay-Countries =~ /(CN|RU|UA|RO|VN)/
+describe RELAYCOUNTRY_BAD Relayed through spammy country at some point
+score RELAYCOUNTRY_BAD 2.0
+header RELAYCOUNTRY_GOOD X-Relay-Countries =~ /^(DE|AT|CH)/
+describe RELAYCOUNTRY_GOOD First untrusted GW is DE, AT or CH
+score RELAYCOUNTRY_GOOD -0.5
+endif # Mail::SpamAssassin::Plugin::RelayCountry
+
+header RCVD_IN_BRBL eval:check_rbl('brbl-lastexternal', 'b.barracudacentral.org.', '127.0.0.2')
+describe RCVD_IN_BRBL Received via a relay in Barracuda RBL
+tflags RCVD_IN_BRBL net
+score RCVD_IN_BRBL 1.4
+
+header RCVD_IN_NIX_SPAM eval:check_rbl('nix-spam-lastexternal', 'ix.dnsbl.manitu.net.')
+describe RCVD_IN_NIX_SPAM Listed in NiX Spam DNSBL (heise.de)
+tflags RCVD_IN_NIX_SPAM net
+score RCVD_IN_NIX_SPAM 1.4
+
+header RCVD_IN_GBUDB eval:check_rbl('gbudb-lastexternal', 'truncate.gbudb.net.', '127.0.0.2')
+describe RCVD_IN_GBUDB Listed in GBUdb Truncate
+tflags RCVD_IN_GBUDB net
+score RCVD_IN_GBUDB 1.4
+
+header RCVD_IN_BLOCKLIST eval:check_rbl('blocklist-lastexternal', 'bl.blocklist.de.')
+describe RCVD_IN_BLOCKLIST Listed in Blocklist DNSRBL
+tflags RCVD_IN_BLOCKLIST net
+score RCVD_IN_BLOCKLIST 1.4
+
+header RCVD_IN_IVMSIP eval:check_rbl('ivmsip-lastexternal', 'xxx')
+describe RCVD_IN_IVMSIP Listed in ivmSIP
+tflags RCVD_IN_IVMSIP net
+score RCVD_IN_IVMSIP 1.4
+
+header RCVD_IN_IVMSIP24 eval:check_rbl('ivmsip-lastexternal', 'xxx24')
+describe RCVD_IN_IVMSIP24 Listed in ivmSIP/24
+tflags RCVD_IN_IVMSIP24 net
+score RCVD_IN_IVMSIP24 1
+
+ifplugin Mail::SpamAssassin::Plugin::URIDNSBL
+urirhssub URIBL_IVMURI xxxuri A 2
+body URIBL_IVMURI eval:check_uridnsbl('URIBL_IVMURI')
+describe URIBL_IVMURI Listed in ivmURI
+tflags URIBL_IVMURI net
+score URIBL_IVMURI 1.4
+reuse URIBL_IVMURI
+endif
