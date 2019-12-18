@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# KatyComputer
+#
+# Simple script to update KAM rules
+
+SYSLOG_TAG=KAM-update
+
+compile=0
+
+logger -d -t $SYSLOG_TAG "Start KAM-Update"
+
+md5_old=$( md5sum /usr/share/spamassassin-extra/KAM.cf )
+wget -q -N -P /usr/share/spamassassin-extra http://www.mcgrail.com/downloads/KAM.cf
+md5_new=$( md5sum /usr/share/spamassassin-extra/KAM.cf )
+if [ "$md5_old" != "$md5_new" ]; then compile=1; fi
+
+md5_old=$( md5sum /usr/share/spamassassin-extra/nonKAMrules.cf )
+wget -q -N -P /usr/share/spamassassin-extra http://www.mcgrail.com/downloads/nonKAMrules.cf
+md5_new=$( md5sum /usr/share/spamassassin-extra/nonKAMrules.cf )
+if [ "$md5_old" != "$md5_new" ]; then compile=1; fi
+
+if [ $compile -eq 1 ]; then
+    logger -d -t $SYSLOG_TAG "KAM-Update found"
+    sa-compile --quiet 2>/dev/null
+    systemctl restart pmg-smtp-filter
+    systemctl restart spamassassin
+else
+    logger -d -t $SYSLOG_TAG "No KAM-Update found"
+fi
