@@ -43,3 +43,5 @@ use_dcc 1
 dcc_timeout 10
 
 loadplugin Mail::SpamAssassin::Plugin::RelayCountry
+country_db_type GeoIP2
+country_db_path /usr/share/GeoIP/GeoLite2-Country.mmdb
