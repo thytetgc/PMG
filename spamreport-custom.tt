@@ -27,10 +27,10 @@ File: [% d.file %]
           </td>
         </tr>
         <tr bgcolor="#ebebeb">
-          <th align=left>Date</th>
-          <th align=left>From</th>
-          <th align=left>Subject</th>
-          <th align=right>Action</th>
+          <th align=left>Data</th>
+          <th align=left>De</th>
+          <th align=left>Assunto</th>
+          <th align=right>Ação</th>
         </tr>
         <tr><td colspan=4><hr></td></tr>
 
