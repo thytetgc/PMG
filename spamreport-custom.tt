@@ -1,3 +1,5 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 [%- IF timespan == 'week' -%]
 [%- SET title = "Relatório semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
@@ -5,12 +7,13 @@
 [%- END -%]
 
 [% BLOCK tooltip %]Received: [% d.date %] [% d.time %]
-From: [% d.envelope_sender %]
-TO: [% d.receiver %]
-Size: [% d.bytes %]
-Score: [% d.spamlevel %]
-File: [% d.file %]
+De: [% d.envelope_sender %]
+Para: [% d.receiver %]
+Tamanho: [% d.bytes %]
+Pontuação: [% d.spamlevel %]
+Arquivo: [% d.file %]
 [% END %]
+</html>
 
 <html>
   <head>
