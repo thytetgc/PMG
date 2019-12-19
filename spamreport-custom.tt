@@ -1,7 +1,7 @@
 [%- IF timespan == 'week' -%]
 [%- SET title = "Relatório semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
-[%- SET title = "Relatório diario de spam de '${pmail}' - ${date}" -%]
+[%- SET title = "Relatório diário de spam de '${pmail}' - ${date}" -%]
 [%- END -%]
 
 [% BLOCK tooltip %]Received: [% d.date %] [% d.time %]
@@ -60,7 +60,7 @@ File: [% d.file %]
 
       </table>
       <p>Por favor use o <a href='[% managehref | url %]'>interface web</a> para gerenciar sua quarentena de spam.</p>
-      <p>Distribuido por <a target=_blank href='https://www.hostlp.com.br'>HostLP</a>.</p>
+      <p>Distribuído por <a target=_blank href='https://www.hostlp.com.br'>HostLP</a>.</p>
 
     </div>
 
