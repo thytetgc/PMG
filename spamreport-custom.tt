@@ -1,7 +1,7 @@
 [%- IF timespan == 'week' -%]
-[%- SET title = "Relatório semanal de spam de '${pmail}' - ${date}'" -%]
+[%- SET title = "Listagem semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
-[%- SET title = "Relatório diário de spam de '${pmail}' - ${date}" -%]
+[%- SET title = "Listagem diaria de spam de '${pmail}' - ${date}" -%]
 [%- END -%]
 
 [% BLOCK tooltip %]Received: [% d.date %] [% d.time %]
