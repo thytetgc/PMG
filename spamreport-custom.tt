@@ -1,5 +1,3 @@
-pageEncoding="ISO-8859-1"
-
 [%- IF timespan == 'week' -%]
 [%- SET title = "Relatório semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
