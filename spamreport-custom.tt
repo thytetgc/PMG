@@ -46,10 +46,10 @@ File: [% d.file %]
           <td align=left><a style='cursor:pointer;' href='[% item.href | url %]'><b>[% item.subject %]</b></a></td>
           <td align=right nowrap>
             <div style='font-size:xx-small;'>
-              <a href='[% item.href | url %]&action=whitelist'>Whitelist</a>&nbsp;
-              <a href='[% item.href | url %]&action=blacklist'>Blacklist</a>&nbsp;
-              <a href='[% item.href | url %]&action=deliver'>Deliver</a>&nbsp;
-              <a href='[% item.href | url %]&action=delete'>Delete</a>
+              <a href='[% item.href | url %]&action=whitelist'>Liberar</a>&nbsp;
+              <a href='[% item.href | url %]&action=blacklist'>Bloquear</a>&nbsp;
+              <a href='[% item.href | url %]&action=deliver'>Entregar</a>&nbsp;
+              <a href='[% item.href | url %]&action=delete'>Deletar</a>
             </div>
           </td>
         </tr>
