@@ -1,5 +1,5 @@
-<html>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+pageEncoding="ISO-8859-1"
+
 [%- IF timespan == 'week' -%]
 [%- SET title = "Relatório semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
@@ -13,7 +13,6 @@ Tamanho: [% d.bytes %]
 Pontuação: [% d.spamlevel %]
 Arquivo: [% d.file %]
 [% END %]
-</html>
 
 <html>
   <head>
