@@ -1,0 +1,67 @@
+[%- IF timespan == 'week' -%]
+[%- SET title = "Relatorio semanal de spam de '${pmail}' - ${date}'" -%]
+[%- ELSE %]
+[%- SET title = "Relatorio diario de spam de '${pmail}' - ${date}" -%]
+[%- END -%]
+
+[% BLOCK tooltip %]Received: [% d.date %] [% d.time %]
+From: [% d.envelope_sender %]
+TO: [% d.receiver %]
+Size: [% d.bytes %]
+Score: [% d.spamlevel %]
+File: [% d.file %]
+[% END %]
+
+<html>
+  <head>
+    <title>[% title %]</title>
+  </head>
+  <body>
+
+    <div align=center>
+      <br />
+      <table width='100%'>
+        <tr>
+          <td colspan=4>
+            <div style='width:600px;'><h2>[% title %]</h2></div>
+          </td>
+        </tr>
+        <tr bgcolor="#ebebeb">
+          <th align=left>Date</th>
+          <th align=left>From</th>
+          <th align=left>Subject</th>
+          <th align=right>Action</th>
+        </tr>
+        <tr><td colspan=4><hr></td></tr>
+
+        <!--start entries-->
+        [% FOREACH item IN items %]
+        <tr title='[% PROCESS tooltip d=item | html  %]' [% IF loop.index % 2 %]
+          bgcolor="#ebebeb"
+      [% ELSE %]
+          bgcolor="#cde6f7"
+      [% END %]>
+          <td align=right nowrap>[% item.date %] [% item.time %]</td>
+          <td>[% item.from %]</td>
+          <td align=left><a style='cursor:pointer;' href='[% item.href | url %]'><b>[% item.subject %]</b></a></td>
+          <td align=right nowrap>
+            <div style='font-size:xx-small;'>
+              <a href='[% item.href | url %]&action=whitelist'>Whitelist</a>&nbsp;
+              <a href='[% item.href | url %]&action=blacklist'>Blacklist</a>&nbsp;
+              <a href='[% item.href | url %]&action=deliver'>Deliver</a>&nbsp;
+              <a href='[% item.href | url %]&action=delete'>Delete</a>
+            </div>
+          </td>
+        </tr>
+        <!-- <tr><td colspan=4><hr></td></tr> -->
+        [% END %]
+        <!--end entries-->
+
+      </table>
+      <p>Por favor use o <a href='[% managehref | url %]'>interface web</a> para gerenciar sua quarentena de spam.</p>
+      <p>Distribuido por <a target=_blank href='https://www.hostlp.com.br'>HostLP</a>.</p>
+
+    </div>
+
+  </body>
+</html>
