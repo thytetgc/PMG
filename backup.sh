@@ -11,7 +11,8 @@ pmgbackup backup
 source='/etc /Scripts /lib/systemd/system /root /usr/local /var/dcc /var/lib/pmg/ /var/log /opt'
 
 # Diretório de backup, /Backup
-backup=/Backup/"`hostname`"
+#backup=/Backup/"`hostname`"
+backup=/Backup
 mkdir -p $backup
 
 # Definição de Variavel
