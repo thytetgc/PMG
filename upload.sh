@@ -1,10 +1,10 @@
 #!/bin/bash
 HOSTL="`hostname`"
 HOST='SERVER_FTP'
-USER='xxx'
+USER='XXX'
 PASS='xxx'
-TARGETFOLDER='/Backup/'$HOSTL''
-SOURCEFOLDER='/backup'
+TARGETFOLDER='/home/storage/'$USER'/Backup/'$HOSTL''
+SOURCEFOLDER='/Backup'
 
 lftp -e "
 open $HOST
