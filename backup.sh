@@ -1,4 +1,5 @@
 #!/bin/bash
+clear
 
 echo [`date +'%d.%m.%Y %H:%M'`] Iniciando Backup ...
 
