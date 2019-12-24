@@ -7,10 +7,11 @@ rm /var/lib/pmg/backup/*
 pmgbackup backup
 
 # Diretórios para fazer backup, /etc /root /var
-source='/etc /lib/systemd/system /root /usr/local /var/dcc /var/lib/pmg/backup /var/log'
+source='/etc /Scripts /lib/systemd/system /root /usr/local /var/dcc /var/lib/pmg/ /var/log /opt'
 
-# Diretório de backup, /backup/node
-backup=/backup/node
+# Diretório de backup, /Backup
+backup=/Backup/"`hostname`"
+mkdir -p $backup
 
 # Definição de Variavel
 datum=$(date +'%Y%m%d')
@@ -32,6 +33,6 @@ echo [`date +'%d.%m.%Y %H:%M'`] Salve $source em $dateiname [3/4] ...
 tar Pcf $dateiname $source
 
 echo [`date +'%d.%m.%Y %H:%M'`] Sincronizar com armazenamento online [4/4] ...
-bash /root/scripts/upload.sh
+bash /Scripts/upload.sh
 
 echo [`date +'%d.%m.%Y %H:%M'`] Pronto!
