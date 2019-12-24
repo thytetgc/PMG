@@ -1,9 +1,9 @@
 #!/bin/bash
 HOSTL="`hostname`"
-HOST='st1.hostlp.cloud'
-USER='HostLP'
-PASS='admin@hostlp*h05t1p'
-TARGETFOLDER='/home/storage/HostLP/Backup/'$HOSTL''
+HOST='SERVER_FTP'
+USER='xxx'
+PASS='xxx'
+TARGETFOLDER='/Backup/'$HOSTL''
 SOURCEFOLDER='/backup'
 
 lftp -e "
