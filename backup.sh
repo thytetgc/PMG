@@ -44,3 +44,4 @@ bash /Scripts/upload.sh
 
 echo [`date +'%d.%m.%Y %H:%M'`] Pronto!
 	 echo "+-------------------------------------------------+OK"
+
