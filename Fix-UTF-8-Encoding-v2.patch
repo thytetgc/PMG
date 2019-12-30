@@ -1,0 +1,23 @@
+--- Utils.pm.orig	2019-12-30 15:45:28.450527464 +0300
++++ Utils.pm	2019-12-30 15:49:35.216537007 +0300
+@@ -1158,8 +1158,10 @@
+     # Nonprintables (controls + x7F + 8bit):
+     my $NONPRINT = "\\x00-\\x1F\\x7F-\\xFF";
+ 
+-    # always use utf-8 (work with japanese character sets)
+-    $txt = encode("UTF-8", $txt);
++    # Convert to UTF-8 if needed
++    if (not utf8::is_utf8($txt)) {
++        $txt = encode("UTF-8", $txt);
++    }
+ 
+     return $txt if $txt !~ /[$NONPRINT]/o;
+ 
+@@ -1256,6 +1258,7 @@
+     $top->attach(
+ 	Data     => $html,
+ 	Type     => "text/html",
++	Charset  => "utf-8",
+ 	Encoding => $debug ? 'binary' : 'quoted-printable');
+ 
+     if ($debug) {
