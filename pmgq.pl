@@ -16,7 +16,7 @@ my $tmpdir = "/tmp/";
 my %options;
 
 sub myhelp{
-    print "delete_quarantine.pl -f <from> -r <rcpt> -u <subject> -a <action>\n";
+    print "pmgqd -f <from> -r <rcpt> -u <subject> -a <action>\n";
     print "\taction is mandatory : count/list/remove\n";
     print "\tit needs at least one : sender, rcpt or subject ; you can mix several\n";
     exit(2);
