@@ -12,14 +12,32 @@ use PMG::Quarantine;
 
 binmode(STDOUT, "encoding(UTF-8)");
 
-my $tmpdir = "/tmp/";
 my %options;
+my $dbh;
 
 sub myhelp{
-    print "pmgdq -f <from> -r <rcpt> -u <subject> -a <action>\n";
-    print "\taction is mandatory : count/list/remove\n";
-    print "\tit needs at least one : sender, rcpt or subject ; you can mix several\n";
+    print "pmdq -f <from> -r <rcpt> -u <subject> -a <action>\n";
+    print "\taction is mandatory : count/list/remove/deliver\n";
+    print "\tit needs at least one : from, rcpt or subject ; you can mix several\n";
+    print "\tIf '-r allemails' or '-f allemails' is used,  the action will be done to all the quarantine queue !\n";
     exit(2);
+}
+
+sub deliver_quarantined_mail {
+    my ($id, $receiver) = @_;
+
+    my ($cid, $rid, $tid) = $id =~ m/^C(\d+)R(\d+)T(\d+)$/;
+    $cid = int($cid);
+    $rid = int($rid);
+    $tid = int($tid);
+
+    if (!$dbh) {
+        $dbh = PMG::DBTools::open_ruledb();
+    }
+
+    my $ref = PMG::DBTools::load_mail_data($dbh, $cid, $rid, $tid);
+
+    PMG::Quarantine::deliver_quarantined_mail($dbh, $ref, $receiver);
 }
 
 sub delete_quarantined_mail {
@@ -30,7 +48,9 @@ sub delete_quarantined_mail {
     $rid = int($rid);
     $tid = int($tid);
 
-    my $dbh = PMG::DBTools::open_ruledb();
+    if (!$dbh) {
+        $dbh = PMG::DBTools::open_ruledb();
+    }
 
     my $ref = PMG::DBTools::load_mail_data($dbh, $cid, $rid, $tid);
 
@@ -54,7 +74,7 @@ my $action = lc($options{a});
 my $endtime = time(); # now
 my $starttime = $endtime - (7 * 24 * 60 * 60) ; # 7 seven days before now !
 
-if($action ne 'count' && $action ne 'list' && $action ne 'remove'){
+if($action ne 'count' && $action ne 'list' && $action ne 'remove' && $action ne 'deliver'){
         myhelp();
 }
 
@@ -64,9 +84,6 @@ if($from eq '' && $rcpt eq '' && $subject eq ''){
 
 #print("action = ".$action.", from = ".$from.", rcpt = ".$rcpt.", subject = ".$subject."\n");
 
-my $spamusers = $tmpdir."/spamusers.json";
-
-#print("/usr/bin/pmgsh get /quarantine/spamusers --starttime $starttime --endtime $endtime >".$spamusers." 2>/dev/null\n");
 my $users = qx(/usr/bin/pmgsh get /quarantine/spamusers --starttime $starttime --endtime $endtime 2>/dev/null);
 my $data = decode_json($users);
 
@@ -76,12 +93,15 @@ my $ecount = 0;
 foreach my $u (@$data){
     my $result = 1;
     if ($rcpt ne '') {
-        if($u->{'mail'} =~ /^$rcpt$/){
+        if($rcpt eq 'allemails'){
+            $result = 1;
+        } elsif($u->{'mail'} =~ /^$rcpt$/){
             $result = 1;
         } else {
             $result = 0;
         }
     }
+
     if($result == 1){
 #       print("Mail: ".$u->{'mail'}."\n");
 
@@ -90,7 +110,9 @@ foreach my $u (@$data){
         foreach my $em (@$emails){
             $result = 1;
             if ($from ne '') {
-                if($em->{'envelope_sender'} =~ /^$from$/){
+                if($from eq 'allemails'){
+                    $result = 1;
+                } elsif($em->{'from'} =~ /.*$from.*/){
                     $result = 1;
                 } else {
                     $result = 0;
@@ -106,10 +128,13 @@ foreach my $u (@$data){
             if ($result == 1){
                 $ecount++;
                 if($action eq 'list'){
-                        print("ID: ".$em->{'id'}." - From: ".$u->{'mail'}." - Sender: ".$em->{'envelope_sender'}." - Subject: ".$em->{'subject'}."\n");
+                        print("ID: ".$em->{'id'}." - Rcpt: ".$u->{'mail'}." - From: ".$em->{'from'}." - Subject: ".$em->{'subject'}."\n");
                 } elsif($action eq 'remove'){
-                    print("REMOVE => ID: ".$em->{'id'}." - From: ".$u->{'mail'}." - Sender: ".$em->{'envelope_sender'}." - Subject: ".$em->{'subject'}."\n");
+                    print("REMOVE => ID: ".$em->{'id'}." - Rcpt: ".$u->{'mail'}." - From: ".$em->{'from'}." - Subject: ".$em->{'subject'}."\n");
                     delete_quarantined_mail($em->{'id'});
+                } elsif($action eq 'deliver'){
+                    print("DELIVER => ID: ".$em->{'id'}." - Rcpt: ".$u->{'mail'}." - From: ".$em->{'from'}." - Subject: ".$em->{'subject'}."\n");
+                    deliver_quarantined_mail($em->{'id'},$u->{'mail'});
                 }
             }
         }
