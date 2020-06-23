@@ -1,14 +1,14 @@
 [%- IF timespan == 'week' -%]
-[%- SET title = "Listagem semanal de spam para '${pmail}' - ${date}'" -%]
+[%- SET title = "Relat&#xF3;rio semanal de spam de '${pmail}' - ${date}'" -%]
 [%- ELSE %]
-[%- SET title = "Listagem diaria de spam para '${pmail}' - ${date}" -%]
+[%- SET title = "Relat&#xF3;rio di&#xE1;rio de spam de '${pmail}' - ${date}" -%]
 [%- END -%]
 
-[% BLOCK tooltip %]Received: [% d.date %] [% d.time %]
+[% BLOCK tooltip %]Recebido: [% d.date %] [% d.time %]
 De: [% d.envelope_sender %]
 Para: [% d.receiver %]
-Tamanho: [% d.bytes %]
-Pontuação: [% d.spamlevel %]
+Tamanho: [% d.mbytes %] bytes
+Pontua&#xE7;&#xE3;o: [% d.spamlevel %]
 Arquivo: [% d.file %]
 [% END %]
 
@@ -47,10 +47,10 @@ Arquivo: [% d.file %]
           <td align=left><a style='cursor:pointer;' href='[% item.href | url %]'><b>[% item.subject %]</b></a></td>
           <td align=right nowrap>
             <div style='font-size:xx-small;'>
-              <a href='[% item.href | url %]&action=whitelist'>Liberar</a>&nbsp;
-              <a href='[% item.href | url %]&action=blacklist'>Bloquear</a>&nbsp;
-              <a href='[% item.href | url %]&action=deliver'>Entregar</a>&nbsp;
-              <a href='[% item.href | url %]&action=delete'>Deletar</a>
+              <a href='[% item.href | url %]&action=whitelist'>Adicionar a Whitelist</a>&nbsp;
+              <a href='[% item.href | url %]&action=blacklist'>Adicionar a Blacklist</a>&nbsp;
+              <a href='[% item.href | url %]&action=deliver'>Liberar e-mail</a>&nbsp;
+              <a href='[% item.href | url %]&action=delete'>Deletar e-mail</a>
             </div>
           </td>
         </tr>
@@ -59,8 +59,9 @@ Arquivo: [% d.file %]
         <!--end entries-->
 
       </table>
-      <p>Por favor use o <a href='[% managehref | url %]'>interface web</a> para gerenciar sua quarentena de spam.</p>
+      <p>Por favor use a <a href='[% managehref | url %]'>interface web</a> para gerenciar a sua quarentena de SPAM.</p>
       <p>Distribuído por <a target=_blank href='https://www.hostlp.com.br'>HostLP</a>.</p>
+      <p><a target=_blank href='https://www.hostlp.com.br'> <img src="https://site.hostlp.com.br/imagens/pmg/HostLP-PMG.png"></a></p>
 
     </div>
 
