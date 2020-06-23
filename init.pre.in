@@ -27,21 +27,3 @@ loadplugin Mail::SpamAssassin::Plugin::SPF
 [% END %]
 
 # always load dkim to improve accuracy
-loadplugin Mail::SpamAssassin::Plugin::DKIM
-
-loadplugin Mail::SpamAssassin::Plugin::Pyzor
-use_pyzor 1
-
-loadplugin Mail::SpamAssassin::Plugin::DCC
-dcc_path /usr/local/bin/dccproc
-dcc_home /var/dcc
-dcc_dccifd_path /var/dcc/dccifd
-dcc_body_max 999999
-dcc_fuz1_max 999999
-dcc_fuz2_max 999999
-use_dcc 1
-dcc_timeout 10
-
-loadplugin Mail::SpamAssassin::Plugin::RelayCountry
-country_db_type GeoIP2
-country_db_path /usr/share/GeoIP/GeoLite2-Country.mmdb
