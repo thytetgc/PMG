@@ -27,3 +27,4 @@ loadplugin Mail::SpamAssassin::Plugin::SPF
 [% END %]
 
 # always load dkim to improve accuracy
+loadplugin Mail::SpamAssassin::Plugin::DKIM
