@@ -24,7 +24,7 @@ if [ $compile -eq 1 ]; then
     logger -d -t $SYSLOG_TAG "KAM-Update found"
     sa-compile --quiet 2>/dev/null
     systemctl restart pmg-smtp-filter
-    systemctl restart spamassassin
+#    systemctl restart spamassassin
 else
     logger -d -t $SYSLOG_TAG "No KAM-Update found"
 fi
