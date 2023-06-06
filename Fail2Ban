@@ -14,7 +14,7 @@ echo '# ========================================================================
 #before = paths-debian.conf
 
 [DEFAULT]
-ignoreip        = localhost avas.hostlp.cloud avas2.hostlp.cloud monitoramento.hostlp.cloud 6f3806b7f879.sn.mynetname.net note-thiago.ddns.net
+ignoreip        = localhost
 # Bloqueia por 12 horas
 bantime         = 21600
 # Permanece registrado por 1 hora
@@ -31,7 +31,7 @@ mta             = sendmail
 chain           = INPUT
 port            = 0:65535
 
-destemail       = thiago@hostlp.net
+destemail       = curioso@pega.me
 sendername      = Fail2Ban
 # Default action to take: ban only
 action          = iptables[name=%(__name__)s, port=%(port)s]
@@ -42,7 +42,7 @@ action          = iptables[name=%(__name__)s, port=%(port)s]
 enabled         = true
 filter          = sshd
 action          = iptables-multiport[name=SSH, port="22,1804", protocol=tcp]
-                sendmail[name=SSH, dest=thiago@hostlp.net]
+                sendmail[name=SSH, dest=curioso@pega.me]
 logpath         = /var/log/auth.log
 maxretry        = 1
 
@@ -50,7 +50,7 @@ maxretry        = 1
 enabled			= true
 filter			= pmg-web-auth
 action          = iptables-multiport[name=PMG-WEB, port="8006", protocol=tcp]
-                sendmail[name=PMG-WEB, dest=thiago@hostlp.net]
+                sendmail[name=PMG-WEB, dest=curioso@pega.me]
 logpath			= /var/log/daemon.log
 maxretry		= 2
 
@@ -58,7 +58,7 @@ maxretry		= 2
 enabled         = true
 filter          = pmg-smtp
 action          = iptables-multiport[name=PMG-SMTP, port="25,465,587", protocol=tcp]
-                sendmail[name=PMG-SMTP, dest=thiago@hostlp.net]
+                sendmail[name=PMG-SMTP, dest=curioso@pega.me]
 logpath         = /var/log/mail.log
 
 # ===============================================================================================================' echo > /etc/fail2ban/jail.conf
