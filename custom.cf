@@ -1,58 +1,11 @@
-ifplugin Mail::SpamAssassin::Plugin::RelayCountry
-add_header all Relay-Country _RELAYCOUNTRY_
-header RELAYCOUNTRY_BAD X-Relay-Countries =~ /(CN|RU|UA|RO|VN)/
-describe RELAYCOUNTRY_BAD Relayed through spammy country at some point
-score RELAYCOUNTRY_BAD 2.0
-header RELAYCOUNTRY_GOOD X-Relay-Countries =~ /^(DE|AT|CH)/
-describe RELAYCOUNTRY_GOOD First untrusted GW is DE, AT or CH
-score RELAYCOUNTRY_GOOD -0.5
-endif # Mail::SpamAssassin::Plugin::RelayCountry
-
-header RCVD_IN_BRBL eval:check_rbl('brbl-lastexternal', 'b.barracudacentral.org.', '127.0.0.2')
-describe RCVD_IN_BRBL Received via a relay in Barracuda RBL
-tflags RCVD_IN_BRBL net
-score RCVD_IN_BRBL 1.4
-
-header RCVD_IN_NIX_SPAM eval:check_rbl('nix-spam-lastexternal', 'ix.dnsbl.manitu.net.')
-describe RCVD_IN_NIX_SPAM Listed in NiX Spam DNSBL (heise.de)
-tflags RCVD_IN_NIX_SPAM net
-score RCVD_IN_NIX_SPAM 1.4
-
-header RCVD_IN_GBUDB eval:check_rbl('gbudb-lastexternal', 'truncate.gbudb.net.', '127.0.0.2')
-describe RCVD_IN_GBUDB Listed in GBUdb Truncate
-tflags RCVD_IN_GBUDB net
-score RCVD_IN_GBUDB 1.4
-
-header RCVD_IN_BLOCKLIST eval:check_rbl('blocklist-lastexternal', 'bl.blocklist.de.')
-describe RCVD_IN_BLOCKLIST Listed in Blocklist DNSRBL
-tflags RCVD_IN_BLOCKLIST net
-score RCVD_IN_BLOCKLIST 1.4
-
-header RCVD_IN_IVMSIP eval:check_rbl('ivmsip-lastexternal', 'xxx')
-describe RCVD_IN_IVMSIP Listed in ivmSIP
-tflags RCVD_IN_IVMSIP net
-score RCVD_IN_IVMSIP 1.4
-
-header RCVD_IN_IVMSIP24 eval:check_rbl('ivmsip-lastexternal', 'xxx24')
-describe RCVD_IN_IVMSIP24 Listed in ivmSIP/24
-tflags RCVD_IN_IVMSIP24 net
-score RCVD_IN_IVMSIP24 1
-
-ifplugin Mail::SpamAssassin::Plugin::URIDNSBL
-urirhssub URIBL_IVMURI xxxuri A 2
-body URIBL_IVMURI eval:check_uridnsbl('URIBL_IVMURI')
-describe URIBL_IVMURI Listed in ivmURI
-tflags URIBL_IVMURI net
-score URIBL_IVMURI 1.4
-reuse URIBL_IVMURI
-endif
 score SUBJ_ALL_CAPS 1
 score BAYES_00 0
 score UNWANTED_LANGUAGE_BODY 1.5
 score MISSING_DATE 0
+score SB_GIF_AND_NO_URIS 0
 
 # Pyzor
- ifplugin Mail::SpamAssassin::Plugin::Pyzor
+ifplugin Mail::SpamAssassin::Plugin::Pyzor
 # <gen:mutable>
 score PYZOR_CHECK 0 1.985 0 1.392 # n=0 n=2
 # </gen:mutable>
@@ -69,10 +22,356 @@ score DCC_REPUT_95_98  0  0.7   0  1.0
 score DCC_REPUT_99_100 0  1.2   0  1.4
 endif # Mail::SpamAssassin::Plugin::DCC
 
+# Phishing
 ifplugin Mail::SpamAssassin::Plugin::Phishing
 phishing_openphish_feed /etc/mail/spamassassin/openphish-feed.txt
 phishing_phishtank_feed /etc/mail/spamassassin/phishtank-feed.csv
-body     URI_PHISHING      eval:check_phishing()
-describe URI_PHISHING      Url match phishing in feed
-score URI_PHISHING 0  2.4   0  2.5
-endif
+body            URI_PHISHING    eval:check_phishing()
+describe        URI_PHISHING    Url match phishing in feed
+score           URI_PHISHING    0  2.4   0  2.5
+endif # Mail::SpamAssassin::Plugin::Phishing
+
+# Deny e-mail with these contents
+# Add content to file: /etc/mail/spamassassin/custom.cf
+
+body     LOCAL_RULE1     /.*Administrador da Web.*/
+score    LOCAL_RULE1     2.5
+body     LOCAL_RULE2     /.*appspot.com.*/
+score    LOCAL_RULE2     2.5
+body     LOCAL_RULE3     /.*Cumprimento de sentença.*/
+score    LOCAL_RULE3     2.5
+body     LOCAL_RULE4     /.*YOUR EMAIL ACCOUNT WAS SELECTED FOR A DONATION.*/
+score    LOCAL_RULE4     2.5
+body     LOCAL_RULE5     /.*Estorno de pix enviado.*/
+score    LOCAL_RULE5     2.5
+body     LOCAL_RULE6     /.*Lotofacil.*/
+score    LOCAL_RULE6     2.5
+body     LOCAL_RULE7     /.*Lotofácil.*/
+score    LOCAL_RULE7     2.5
+body     LOCAL_RULE8     /.*Sua conta de email será temporariamente bloqueada.*/
+score    LOCAL_RULE8     2.5
+body     LOCAL_RULE9     /.*Faça uma cotação agora mesmo.*/
+score    LOCAL_RULE9     2.5
+body     LOCAL_RULE10    /.*Faca uma cotacao agora mesmo.*/
+score    LOCAL_RULE10    2.5
+body     LOCAL_RULE11    /.*serviço de Reabilitação Cadastral.*/
+score    LOCAL_RULE11    2.5
+body     LOCAL_RULE12    /.*servico de Reabilitacao Cadastral.*/
+score    LOCAL_RULE12    2.5
+body     LOCAL_RULE13    /.*Eu sou um hacker que tem acesso ao seu sistema operacional.*/
+score    LOCAL_RULE13    2.5
+body     LOCAL_RULE14    /.*equipe de suporte do webmail zimbra.*/
+score    LOCAL_RULE14    2.5
+body     LOCAL_RULE15    /.*Pare de perder tempo e dinheiro buscando planilhas.*/
+score    LOCAL_RULE15    2.5
+body     LOCAL_RULE16    /.*Notificação de Audiência.*/
+score    LOCAL_RULE16    2.5
+body     LOCAL_RULE17    /.*Mude agora pra o Prime.*/
+score    LOCAL_RULE17    2.5
+body     LOCAL_RULE18    /.*Seu armazenamento de caixa de correio atingi.*/
+score    LOCAL_RULE18    2.5
+body     LOCAL_RULE19    /.*Para evitar bloqueio, clique no link abaixo.*/
+score    LOCAL_RULE19    2.5
+body     LOCAL_RULE20    /.*esta é uma atualização de emergência e deve ser levada muito a sério.*/
+score    LOCAL_RULE20    2.5
+body     LOCAL_RULE21    /.*Peça o novo Cartão Santander SX.*/
+score    LOCAL_RULE21    2.5
+body     LOCAL_RULE22    /.*Cartão Santander SX.*/
+score    LOCAL_RULE22    2.5
+body     LOCAL_RULE23    /.*Cartão de Crédito SX do Santander.*/
+score    LOCAL_RULE23    2.5
+body     LOCAL_RULE24    /.*Escolha abaixo a melhor forma de consultar o protesto/
+score    LOCAL_RULE24    2.5
+body     LOCAL_RULE25    /.*Por motivos de seguran|.*da nossa plataforma do Webmail|.* ocasionar a perda de suas informa|.*para que possamos sempre melhorar a nossa seguran.*/
+score    LOCAL_RULE25    2.5
+body     LOCAL_RULE26    /.*cadastramento do internet banking.*/
+score    LOCAL_RULE26    2.5
+body     LOCAL_RULE27    /.*Seu dispositivo está infectado e hackeado.*/
+score    LOCAL_RULE27    2.5
+body     LOCAL_RULE28    /.*Seu CNPJ se encontra suspenso.*/
+score    LOCAL_RULE28    2.5
+body     LOCAL_RULE29    /.*Você já possui uma pontuação decorrente|.*do vínculo deste e-mail ao BB|.*, porém para resgatar seus pontos|.* e aproveitar os benefícios do programa será necessário validar sua adesão e criar um login para acesso ao portal Ponto pra sua Empresa.*./
+score    LOCAL_RULE29    2.5
+body     LOCAL_RULE30    /.*um problema com os dados de pagamento atuais*./
+score    LOCAL_RULE30    2.5
+body     LOCAL_RULE31    /webmail-seguro.co/i
+score    LOCAL_RULE31    2.5
+body     LOCAL_RULE32    /sistemascenter.space/i
+score    LOCAL_RULE32    2.5
+body     LOCAL_RULE33    /cloudns.asia/i
+score    LOCAL_RULE33    2.5
+body     LOCAL_RULE34    /Delete any items you do not need from your mailbox/i
+score    LOCAL_RULE34    2.5
+body     LOCAL_RULE35    /You can review these here and choose what happens to them/i
+score    LOCAL_RULE35    2.5
+body     LOCAL_RULE36    /fyslog.com.vn/i
+score    LOCAL_RULE36    2.5
+body     LOCAL_RULE37    /Boom de vendas/i
+score    LOCAL_RULE37    2.5
+body     LOCAL_RULE38    /Sua caixa de e-mail excedeu o limite/i
+score    LOCAL_RULE38    2.5
+body     LOCAL_RULE39    /Sua caixa postal ultrapassou o limite/i
+score    LOCAL_RULE39    2.5
+body     LOCAL_RULE10    /sleekinterior.com/
+score    LOCAL_RULE10    2.5
+body     LOCAL_RULE41    /weebly.com/
+score    LOCAL_RULE41    2.5
+body     LOCAL_RULE42    /Tenho monitorado o seu dispositivo na rede/
+score    LOCAL_RULE42    2.5
+body     LOCAL_RULE43    /tinyurl.com/
+score    LOCAL_RULE43    2.5
+body     LOCAL_RULE44    /zschimmer-schwarz-eg.com/
+score    LOCAL_RULE44    2.5
+body     LOCAL_RULE45    /emailmeform.com/
+score    LOCAL_RULE45    2.5
+body     LOCAL_RULE46    /typeform.com/
+score    LOCAL_RULE46    2.5
+body     LOCAL_RULE47    /kekovapansiyon.com/
+score    LOCAL_RULE47    2.5
+body     LOCAL_RULE48    /creatorlink.net/
+score    LOCAL_RULE48    2.5
+body     LOCAL_RULE49    /paperform.co/
+score    LOCAL_RULE49    2.5
+body     LOCAL_RULE50    /123formbuilder.com/
+score    LOCAL_RULE50    2.5
+body     LOCAL_RULE51    /Sua caixa de Email excedeu o limite de armazenamento/i
+score    LOCAL_RULE51    2.5
+body     LOCAL_RULE52    /Sua caixa de Email excedeu o limite de/i
+score    LOCAL_RULE52    2.5
+body     LOCAL_RULE53    /Comprovante de Pix/i
+score    LOCAL_RULE53    2.5
+body     LOCAL_RULE54    /.*Estimados usuarios de correo de Zimbra*./
+score    LOCAL_RULE54    2.5
+body     LOCAL_RULE55    /.*Curriculo.pdf*./
+score    LOCAL_RULE55    2.5
+
+rawbody         SA_BODY_SCRIPT1 /(?s)<script.*?>/i
+score           SA_BODY_SCRIPT1 20
+describe        SA_BODY_SCRIPT1 TAG contendo javascript
+
+
+body     PHISHING_BODY   /.*conta de e-mail foi infectada|.*clique aqui para atualizar|.*excedeu seu limite de|.*validar imediatamente sua conta de webmail|.*webmail apagando assim toda conta|.*Administração de Webmail|.*Para atualizar sua conta de e-mail clique aqui|.*Sua Conta acaba de ser acessada|.*exigidos actualizar suas informa|.*proteja e aumente o tamanho da sua caixa de correio|.*Clique aqui e Descubra|.*Clique Aqui e Adquira|.*Aproveite o novo momento com a nova interface de webmail|.*Hi, victim|.*Para actualizar a sua conta de webmail|.*Atualize os dados da sua conta para voltar a assistir e evite|.*bloqueio do seu acesso para sua seguran|.*Por favor, proteja e aumente o tamanho da sua caixa de correio|.*anual do webmail|.*revalidar sua caixa de correio|.*sua caixa postal vai ser desati|.*queremos lembrar que a conta vinculada ao seu dispositivo de seguran|.*recusam a atualizar sua conta|.*para a conta de webmail ativo|.*entrar em sua conta e atualizar sua conta|.*Sua senha da caixa de correio|.*Sua senha de e-mail|.*Eu sou um hacker que tem acesso ao seu sistema operacional|.*Depois disso, fiz um backup completo do seu disco|.*webmail a atualizarem imediatamente sua conta de webmail|ATIVA.*O DO CORREIO ELETR.*NICO|Uma tentativa incomum de login|.*excedeu o limite de armazenamento da caixa de correio|.*Seu armazenamento de caixa de correio atingiu seu limite de cota.*/i
+score    PHISHING_BODY   2.5
+
+body     SA_CORREIOS_SPAM1 /Objeto não entregue|carteiro não atendido|retire sua encomenda no endereço informado|Taxa de importacao pendente|realize o pagamento agora mesmo/i
+score    SA_CORREIOS_SPAM1 2.5
+describe SA_CORREIOS_SPAM1 Spam Correios regra 1
+
+body     SA_CORREIOS_SPAM2 /três tentativas de entrega|realize a impressão da guia abaixo|dirija-se a agência indicada|realize a impressão para a retirada/i
+score    SA_CORREIOS_SPAM2 2.5
+describe SA_CORREIOS_SPAM2 Spam Correios regra 2
+
+body     SA_BRINQUEDOS /Brinquedos que estimulam criatividade|A melhor maneira de presentear|brinquedos mais incríveis|trabalha todo o cognitivo/i
+score    SA_BRINQUEDOS 2.5
+describe SA_BRINQUEDOS Spam Brinquedos
+
+body     SA_LOTOFACIL /Ganhe Sempre na Lotofácil|Lotofacil|Remover e-mail da base/i
+score    SA_LOTOFACIL 2.5
+describe SA_LOTOFACIL Spam Lotofácil
+
+body     SA_MERCADOLIVRE1 /Ir para o detalhe da venda|Prepare o pacote e combine o envio|Remover e-mail da base/i
+score    SA_MERCADOLIVRE1 2.5
+describe SA_MERCADOLIVRE1 Phishing Mercado Livre 1
+
+body     SA_MERCADOLIVRE2 /Entre em contato com seu comprador para fazer o envio|recomendamos que você guarde um comprovante de entrega/i
+score    SA_MERCADOLIVRE2 2.5
+describe SA_MERCADOLIVRE2 Phishing Mercado Livre 2
+
+body     SA_MERCADOLIVRE3 /Detectamos um novo acesso|Não reconheço este acesso/i
+score    SA_MERCADOLIVRE3 2.5
+describe SA_MERCADOLIVRE3 Phishing Mercado Livre 3
+
+body     SA_PROCESSO1 /INTIMAÇÃO da parte executada|acrescidas de eventuais custas processuais|Em "ANEXO" - Intimação Classe|apresentar impugnação/i
+score    SA_PROCESSO1 2.5
+describe SA_PROCESSO1 Phishing Processo Justiça 1
+
+body     SA_CLARO1 /Evite o bloqueio do seu serviço|sua fatura ainda não consta no nosso sistema|seu sinal será reabilitado em até 24h/i
+score    SA_CLARO1 2.5
+describe SA_CLARO1 Phishing Claro 1
+
+body     SA_CLARO2 /Se o seu sinal já está bloqueado|realize o pagamento desta fatura|a negociação de seu débito é feita Online|já aplicados nesta fatura abaixo/i
+score    SA_CLARO2 2.5
+describe SA_CLARO2 Phishing Claro 2
+
+body     SA_PORN1 /\b(?i)(Adult|Porn|Sexy)/i
+score    SA_PORN1 4.0
+describe SA_PORN1 Phishing Porno 1
+
+body     SA_PHISHING1 /conta de e-mail foi infectada|excedeu seu limite de|aumente o tamanho da sua caixa de correio|Atualize os dados da sua conta/i
+score    SA_PHISHING1 2.5
+describe SA_PHISHING1 Phishing conta de e-mail 1
+
+body     SA_PHISHING2 /Please see the attached file|Archive file attached/i
+score    SA_PHISHING2 2.5
+describe SA_PHISHING2 Phishing conta de e-mail 2
+
+body     SA_PHISHING3 /account Renewal|K­e­e­p S­a­m­e P­a­ss­w­or­d/i
+score    SA_PHISHING3 2.5
+describe SA_PHISHING3 Phishing conta de e-mail 3
+
+body     SA_PHISHING4 /E-Mail prestes a ser DESATIVADO|E-Mail Será Desativado/i
+score    SA_PHISHING4 2.5
+describe SA_PHISHING4 Phishing conta de e-mail 4
+
+body     SA_PHISHING5 /Reset password/i
+score    SA_PHISHING5 2.5
+describe SA_PHISHING5 Phishing conta de e-mail 5
+
+body     SA_PHISHING6 /Account Notification|Current password for/i
+score    SA_PHISHING6 2.5
+describe SA_PHISHING6 Phishing conta de e-mail 6
+
+body     SA_CIDADANIA2 /durante a busca dos meus documentos|passei por todos esses processos de pesquisa/i
+score    SA_CIDADANIA2 2.5
+describe SA_CIDADANIA2 Spam cidadania italiana 2
+
+header   SA_BRINDES1 Subject =~ /\bBrindes com status de presente/i
+score    SA_BRINDES1 2.5
+describe SA_BRINDES1 Spam brindes 1
+
+body     SA_BRINDES2 /Brindes com status de presente|sua marca indo para todos os lugares|sacolas e mochilas PERSONALIZADAS|Atendemos todo o brasil!/i
+score    SA_BRINDES2 2.5
+describe SA_BRINDES2 Spam brindes 2
+
+body     SA_MENTIRAS1 /Tenho uma informação importante/i
+score    SA_MENTIRAS1 2.5
+describe SA_MENTIRAS1 Phishing conta de e-mail 1
+
+body     SA_MENTIRAS2 /e-mail sem nenhuma resposta sua/i
+score    SA_MENTIRAS2 2.5
+describe SA_MENTIRAS2 Phishing conta de e-mail 2
+
+body     SA_MENTIRAS3 /Password For|Will Expires|Keep Current Password/i
+score    SA_MENTIRAS3 2.5
+describe SA_MENTIRAS3 Phishing conta de e-mail 3
+
+body     SA_INTIMACAO1 /INTIMAÇÃO PARA COMPARECIMENTO|COMPARECIMENTO EM AUDIÊNCIA|Nos termos do art. 455|para INTIMAR Vossa Senhoria|caso Vossa Senhoria|deixe de comparecer sem motivo|determinar a condução coercitiva/i
+score    SA_INTIMACAO1 2.5
+describe SA_INTIMACAO1 Spam intimação judicial 1
+
+body     SA_INTIMACAO2 /\b(?i)(voc[eê] recebeu uma intima[cç][aã]o)|você recebeu uma intimação./i
+score    SA_INTIMACAO2 2.5
+describe SA_INTIMACAO2 Spam intimação judicial 2
+
+body     SA_INTIMACAO3 /respondendo por estas despesas|na forma preconizada pelo art|5º do Código de Processo Civil|na qualidade de testemunha|à audiência que será realizada|poderá o d. juízo determinar|INTIMAÇÃO PARA/i
+score    SA_INTIMACAO3 2.5
+describe SA_INTIMACAO3 Spam intimação judicial 3
+
+#uri      SA_GOOGLEUSERCONTENT /\.googleusercontent.com(?:\/|$)/i
+#score    SA_GOOGLEUSERCONTENT 2.5
+#describe SA_GOOGLEUSERCONTENT URL hospedando malware no Google
+
+#uri      SA_AMAZONAWSCOM /\.amazonaws.com(?:\/|$)/i
+#score    SA_AMAZONAWSCOM 2.5
+#describe SA_AMAZONAWSCOM URL hospedando malware na Amazon
+
+uri      SA_PORTASNAOPADRAO m{https?://[^/\s]+?:\d+(?<!:80)(?<!:443)(?<!:8080)(?:/|\s|$)}
+score    SA_PORTASNAOPADRAO 1.0
+describe SA_PORTASNAOPADRAO Utiliza portas não padrão na URL
+
+uri      SA_PORTASNAOPADRAOHTTPS m{https?://[^/\s]+?:\d+(?<!:80)(?<!:443)(?<!:8080)(?:/|\s|$)}
+score    SA_PORTASNAOPADRAOHTTPS 1.0
+describe SA_PORTASNAOPADRAOHTTPS HTTPS utilizando portas não padrão na URL
+
+uri      SA_PORTASNAOPADRAOHTTP m{http?://[^/\s]+?:\d+(?<!:80)(?<!:443)(?<!:8080)(?:/|\s|$)}
+score    SA_PORTASNAOPADRAOHTTP 1.0
+describe SA_PORTASNAOPADRAOHTTP HTTP utilizando portas não padrão na URL
+
+uri      SA_LINKSCOMIPV4 /^http?\:\/\/(?:\S*\@)?\d+\.\d+\.\d+\.\d+/i
+score    SA_LINKSCOMIPV4 1.0
+describe SA_LINKSCOMIPV4 Links HTTP contendo IPS na URL
+
+uri      SA_LINKSCOMIPV4SSL /^https?\:\/\/(?:\S*\@)?\d+\.\d+\.\d+\.\d+/i
+score    SA_LINKSCOMIPV4SSL 1.0
+describe SA_LINKSCOMIPV4SSL Links HTTPS contendo IPS na URL
+
+uri      SPAM_LINK_1 /\/[a-z]+\.php/i
+score    SPAM_LINK_1 0.2
+describe SPAM_LINK_1 Link de spam URL contendo PHP
+
+uri      SPAM_LINK_2 /\/[a-z]+\.aspx/i
+score    SPAM_LINK_2 0.2
+describe SPAM_LINK_2 Link de spam URL contendo ASP
+
+uri      SPAM_LINK_3  /\/\w\/\w{10,}\/\w{10,}/i
+score    SPAM_LINK_3 2.5
+describe SPAM_LINK_3 Variação de link de Spam
+
+header   SA_PHISHING2 Subject =~ /\bUm dispositivo desconhecido|acessou a sua conta recentemente/i
+score    SA_PHISHING2 2.5
+describe SA_PHISHING2 Phishing conta de e-mail 2
+
+header   SA_PHISHING3 Subject =~ /\bTaxa de importacao pendente|realize o pagamento agora mesmo/i
+score    SA_PHISHING3 2.5
+describe SA_PHISHING3 Phishing conta de e-mail 3
+
+header   SA_PHISHING4 Subject =~ /\bCumprimento de sentença/i
+score    SA_PHISHING4 2.5
+describe SA_PHISHING4 Phishing conta de e-mail 4
+
+body     SA_PHISHING5 /enviei um e-mail da sua conta|tenho acesso total à sua conta|você foi infectado pelo|me dá acesso total|e controle seu dispositivo|posso ver tudo na sua tela|acesso a todas as correspondências|carteira BTC/i
+score    SA_PHISHING5 2.5
+describe SA_PHISHING5 Phishing conta de e-mail 5
+
+body     SA_PHISHING6 /ligo a câmera e o microfone|todos os seus contatos|toda a sua correspondência|Fiz um vídeo mostrando|como você se satisfaz|Se você quiser evitar isso|transferir a quantia de 500 USD|meu endereço de bitcoin/i
+score    SA_PHISHING6 2.5
+describe SA_PHISHING6 Phishing conta de e-mail 6
+
+header   SA_PROMO1 Subject =~ /\bMega queima de estoque|Canecas e Copos com SUPER DESCONTOS/i
+score    SA_PROMO1 2.5
+describe SA_PROMO1 Spam promoções 1
+
+header   SA_CIDADANIA1 Subject =~ /\bGuia prático para|cidadania italiana/i
+score    SA_CIDADANIA1 2.5
+describe SA_CIDADANIA1 Spam cidadania italiana 1
+
+header   LOCAL_DOUBLE_FROM_SPAM From =~ /.+\@.+\@/i
+score    LOCAL_DOUBLE_FROM_SPAM 1.0
+describe No descrition
+
+header   __SPF_SOFTFAIL_FROM    Return-Path:addr =~ /\@(gmail\.com|outlook\.com|outlook\.com.br|hotmail\.com|live\.com)$/i
+meta     SPF_SOFTFAIL_FROM      ( __SPF_SOFTFAIL_FROM && SPF_SOFTFAIL )
+score    SPF_SOFTFAIL_FROM      2.5
+describe SPF_SOFTFAIL_FROM      SPF Softfail em serviços de email gratuitos
+
+header __WP_X_PHP_ORIG_SCRIPT X-PHP-Originating-Script =~ /(post|gallery|user)\.php/i
+header __WP_X_PHP_SCRIPT X-PHP-Script =~ /(post|gallery|user)\.php/i
+header __WP_X_SOURCE X-Source =~ /php-cgi/i
+header __WP_X_SOURCE_ARGS X-Source-Args =~ /(post|gallery|user)\.php/i
+header __WP_PATH_X_SOURCE_ARGS X-Source-Args =~ /\/wp\-(content|includes)\//i
+header __JO_COMP_X_SOURCE_ARGS X-Source-Args =~ /components\/com_/i
+header __JO_X_SOURCE_ARGS X-Source-Args =~ /\/joomla\//i
+
+meta            CMS_MAIL ( __WP_X_PHP_ORIG_SCRIPT || __WP_X_PHP_SCRIPT || __WP_X_SOURCE || __WP_X_SOURCE_ARGS || __WP_PATH_X_SOURCE_ARGS || __JO_COMP_X_SOURCE_ARGS || __JO_X_SOURCE_ARGS )
+score           CMS_MAIL 2.5
+describe        CMS_MAIL Email enviado por CMS Hackeado
+
+header          OUTDATED_PHP X-Mailer =~ /PHP v?5\.[1234].*/i
+score           OUTDATED_PHP 2.5
+describe        OUTDATED_PHP Email enviado de um PHP desatualizado
+
+header          X_MAILER_SENDEMAIL X-Mailer =~ /sendEmail/i
+score           X_MAILER_SENDEMAIL 2.5
+describe        X_MAILER_SENDEMAIL Email enviado pelo sendEmail
+
+header          VULN_PHPMAILER X-Mailer =~ /PHPMailer 5\.2\.[0-9] /i
+score           VULN_PHPMAILER 2.5
+describe        VULN_PHPMAILER Email enviado por uma versão vulnerável do PHPMailer
+
+header          __SA_VIRUS_MACROS Subject =~ /\b(Fwd:|Re:|RE:|FWD:)  [A-Za-z0-9_-]+\@/i
+mimeheader      __MIME_EXCEL_WORD  Content-Type =~ /\.(xls|xlsx|doc|docx)\b/i
+meta            SA_MACROS_OFFICE ( __SA_VIRUS_MACROS && __MIME_EXCEL_WORD )
+score           SA_MACROS_OFFICE 1.0
+describe        SA_MACROS_OFFICE Phishing Office com macros maciliciosos
+
+#header         __FROM_RETURN1  From =~ /(root|ubuntu|www-data|www)[\w-+=\.]*\@/i
+#header         __FROM_RETURN2  Received =~ /\bfrom\s<?[\w-+=\.]*(root|ubuntu|www-data|www)[\w-+=\.]*\@/i
+#meta           FROM_RETURN     (__FROM_RETURN1 || __FROM_RETURN2)
+#score          FROM_RETURN     2.5
+#describe       FROM_RETURN     Remetente de origem sendo contas de serviço
+
+#header         __FROM_GENERICa  From =~ /(no-?reply|mkt|marketing|naoresponda|promocoes|promo|newslleter|maladireta)[\w-+=\.]*\@/i
+#header         __FROM_GENERICb  Received =~ /\bfrom\s<?[\w-+=\.]*(no-?reply|mkt|marketing|naoresponda|promocoes|promo|newslleter|maladireta)[\w-+=\.]*\@/i
+#meta           FROM_GENERIC     (__FROM_GENERICa || __FROM_GENERICb)
+#score          FROM_GENERIC     2.5
+#describe       FROM_GENERIC     Spam informativos com endereços genéricos
